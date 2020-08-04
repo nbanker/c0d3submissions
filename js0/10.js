@@ -8,9 +8,9 @@
  */
 
 const solution = (func1, func2) => {
-  return func1() + func2();
-}
+	return func1() + func2();
+};
 
 module.exports = {
-  solution
-}
+	solution
+};

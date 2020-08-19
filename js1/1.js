@@ -8,11 +8,11 @@
  */
 
 const solution = (num) => {
-  return () => {
-   return num = ++num;
-  }
-}
+	return () => {
+		return (num = ++num);
+	};
+};
 
 module.exports = {
-  solution
-}
+	solution
+};

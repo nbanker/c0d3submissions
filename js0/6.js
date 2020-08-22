@@ -9,9 +9,9 @@
  */
 
 const solution = (num1, num2) => {
-  return true
-}
+	return num1 > num2;
+};
 
 module.exports = {
-  solution
-}
+	solution
+};

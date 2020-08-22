@@ -19,7 +19,7 @@ const solution = (num, i = 2) => {
 	}
 	return solution(num, ++i);
 };
-
+//
 module.exports = {
 	solution
 };

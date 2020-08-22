@@ -9,9 +9,15 @@
  */
 
 const solution = (inp, letter, i = 0) => {
-  return true
-}
+	if (inp[i] === letter) {
+		return true;
+	}
+	if (inp.length > i) {
+		return solution(inp, letter, ++i);
+	}
+	return false;
+};
 
 module.exports = {
-  solution
-}
+	solution
+};

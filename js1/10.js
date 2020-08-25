@@ -17,10 +17,15 @@
  * @returns {function}
  */
 
-const solution = (str, fun) => {
-  return () => { }
-}
+const solution = (str, fun, i = 0) => {
+	return () => {
+		fun(str[i++]);
+		if (i === str.length) {
+			i = 0;
+		}
+	};
+};
 
 module.exports = {
-  solution
-}
+	solution
+};

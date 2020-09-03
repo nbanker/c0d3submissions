@@ -8,9 +8,18 @@
  */
 
 const solution = (num, i = 2) => {
-  return true
-}
-
+	if (num < i) {
+		return false;
+	}
+	if (num === i) {
+		return true;
+	}
+	if (num % i === 0) {
+		return false;
+	}
+	return solution(num, ++i);
+};
+//
 module.exports = {
-  solution
-}
+	solution
+};

@@ -8,13 +8,6 @@
  * @returns {array}
  */
 
-// const solution = (fun, i = 0, arr = []) => {
-// 	if (fun() === true || fun(i) === true) {
-// 		return arr;
-// 	}
-// 	arr.push(i);
-// 	return solution(fun, ++i, arr);
-// };
 
 const solution = (fun, i = 0, arr = []) => {
 	if (fun(i) === false) {

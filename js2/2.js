@@ -8,14 +8,22 @@
  * @returns {array}
  */
 
+// const solution = (fun, i = 0, arr = []) => {
+// 	if (fun() === true || fun(i) === true) {
+// 		return arr;
+// 	}
+// 	arr.push(i);
+// 	return solution(fun, ++i, arr);
+// };
+
 const solution = (fun, i = 0, arr = []) => {
-	if (fun() === true || fun(i) === true) {
-		return arr;
+	if (fun(i) === false) {
+		arr.push(i++);
+		return solution(fun, i, arr);
 	}
-	arr.push(i);
-	return solution(fun, ++i, arr);
+	return arr;
 };
 
 module.exports = {
-  solution
-}
+	solution
+};

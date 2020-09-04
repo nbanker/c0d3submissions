@@ -10,10 +10,18 @@
  * @returns {array}
  */
 
-const solution = (row, col) => {
-  return []
-}
+const solution = (row, col, arr = [], res = []) => {
+	if (res.length === row) {
+		return res;
+	}
+	if (col > 0) {
+		arr.push(0);
+		return solution(row, --col, arr, res);
+	}
+	res.push(arr);
+	return solution(row, col, arr, res);
+};
 
 module.exports = {
-  solution
-}
+	solution
+};

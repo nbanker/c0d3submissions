@@ -9,12 +9,12 @@
  */
 
 
-const solution = (fun, i = 0, arr = []) => {
-	if (fun(i) === false) {
-		arr.push(i++);
-		return solution(fun, i, arr);
+const solution = (fun, arr = []) => {
+	if (fun(arr.length)){
+		return arr;
 	}
-	return arr;
+	arr.push(arr.length);
+	return solution(fun, arr);
 };
 
 module.exports = {

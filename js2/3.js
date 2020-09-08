@@ -10,16 +10,19 @@
  * @returns {array}
  */
 
-const solution = (row, col, arr = [], res = []) => {
+const createInnerArr = (col, arr = []) => {
+	if (col === arr.length) {
+		return arr;
+	}
+	return createInnerArr(col, arr.concat(0));
+};
+
+const solution = (row, col, res = []) => {
 	if (res.length === row) {
 		return res;
 	}
-	if (col > 0) {
-		arr.push(0);
-		return solution(row, --col, arr, res);
-	}
-	res.push(arr);
-	return solution(row, col, arr, res);
+	res.push(createInnerArr(col));
+	return solution(row, col, res);
 };
 
 module.exports = {

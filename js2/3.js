@@ -13,8 +13,9 @@
 const createInnerArr = (col, arr = []) => {
 	if (col === arr.length) {
 		return arr;
-	}
-	return createInnerArr(col, arr.concat(0));
+  }
+  arr.push(0)
+	return createInnerArr(col, arr);
 };
 
 const solution = (row, col, res = []) => {

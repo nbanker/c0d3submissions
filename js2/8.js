@@ -5,8 +5,12 @@
  */
 
 const solution = () => {
-  Array.prototype.cMap = function (cb) {
-    return 0
+  Array.prototype.cMap = function (cb ,i=0, newArr=[]) {
+    if(this.length === newArr.length){
+      return newArr
+    }
+    newArr.push(cb(this[i], i, this))
+    return this.cMap(cb,++i,newArr)
   }
 }
 

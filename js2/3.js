@@ -10,10 +10,22 @@
  * @returns {array}
  */
 
-const solution = (row, col) => {
-  return []
-}
+const createInnerArr = (col, arr = []) => {
+	if (col === arr.length) {
+		return arr;
+  }
+  arr.push(0)
+	return createInnerArr(col, arr);
+};
+
+const solution = (row, col, res = []) => {
+	if (res.length === row) {
+		return res;
+	}
+	res.push(createInnerArr(col));
+	return solution(row, col, res);
+};
 
 module.exports = {
-  solution
-}
+	solution
+};

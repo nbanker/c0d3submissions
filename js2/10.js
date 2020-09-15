@@ -5,8 +5,14 @@
  */
 
 const solution = () => {
-  Array.prototype.cFilter = function () {
-    return 0
+  Array.prototype.cFilter = function(cb, e, i = 0, arr, newArr=[]){
+    if(this.length === i){
+    return newArr
+    }
+    if(cb(this[i], i, this)){
+      newArr.push(this[i])
+    }
+    return this.cFilter(cb, e, ++i, arr, newArr)
   }
 }
 

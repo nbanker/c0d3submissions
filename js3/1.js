@@ -4,8 +4,13 @@
  * @returns {array} arr
  */
 
-const solution = (arr, obj) => {
-  return []
+const solution = (arr, obj, newArr=[]) => {
+  arr.forEach((e)=>{
+    if(obj[e]){
+      newArr.push(obj[e])
+    }
+  })
+  return newArr
 }
 
 module.exports = {

@@ -7,7 +7,7 @@
 const solution = (arr) => {
   return (obj, newObj={})=>{
     arr.forEach((e)=>{
-      if(obj[e]){
+      if(obj.hasOwnProperty(`${e}`)){
         newObj[e] = obj[e]
       }
     })

@@ -5,9 +5,17 @@
  * @returns {boolean}
  */
 
-const solution = (arr, num) => {
-  return true
+const solution = (arr, num, obj={}, found = false)=>{
+  
+  arr.forEach((e, i)=>{
+  if(obj[num-e]){
+  found = true
+  }
+  obj[e] = i
+  })
+  return found
 }
+
 
 module.exports = {
   solution

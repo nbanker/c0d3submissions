@@ -8,7 +8,7 @@
 const solution = (arr, num, obj={}, found = false)=>{
   
   arr.forEach((e, i)=>{
-  if(obj[num-e]){
+  if(!!obj[num-e]){
   found = true
   }
   obj[e] = i

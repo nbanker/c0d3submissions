@@ -5,13 +5,12 @@
  */
 
 const solution = (arr) => {
-  return (obj, newObj={})=>{
-    arr.forEach((e)=>{
+  return (obj)=>{
+  return arr.reduce((acc, e)=>{
       if(obj.hasOwnProperty(`${e}`)){
-        newObj[e] = obj[e]
-      }
-    })
-    return newObj
+        acc[e] = obj[e]
+      } return acc
+    },{})
   }
 }
 

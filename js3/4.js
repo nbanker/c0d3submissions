@@ -5,17 +5,14 @@
  * @returns {boolean}
  */
 
-const solution = (arr, num, obj={}, found = false)=>{
-  
-  arr.forEach((e, i)=>{
-  if(!!obj[num-e]){
-  found = true
-  }
-  obj[e] = i
-  })
-  return found
+const solution = (arr, num, obj={})=>{
+  return arr.find((e)=>{
+    if(obj.hasOwnProperty([num - e])){
+      return true
+    }
+    obj[e] = false
+  }) !==undefined
 }
-
 
 module.exports = {
   solution

@@ -7,12 +7,13 @@
  * @call each function value of the object, millieseconds after each other
 */
 
-solution = (obj=this, num, key = Object.keys(obj))=>{
-  key.reduce((acc, e, i)=>{
+solution = (obj, num, i=0, keys = Object.keys(obj))=>{
+  if(obj[keys[i]]){
+    obj[keys[i]](keys[i])
     setTimeout(()=>{
-      obj[e](e)
-    }, num * i)
-  }, {})
+      solution(obj, num, i + 1, keys)
+    },num)
+  } return 
 }
 
 module.exports = {

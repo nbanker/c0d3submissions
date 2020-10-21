@@ -7,8 +7,12 @@
  * @call each function value of the object, millieseconds after each other
 */
 
-const solution = (obj, num) => {
-
+solution = (obj=this, num, key = Object.keys(obj))=>{
+  key.reduce((acc, e, i)=>{
+    setTimeout(()=>{
+      obj[e](e)
+    }, num * i)
+  }, {})
 }
 
 module.exports = {

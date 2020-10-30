@@ -49,6 +49,9 @@
     }
   })
   nextButton.addEventListener('click', ()=>{
+    if(!nextUrl){
+      getPokemon('https://pokeapi.co/api/v2/pokemon/')
+    }
     getPokemon(nextUrl)
   })
 

@@ -5,8 +5,13 @@
  * @returns {boolean}
  */
 
-const solution = (arr, num) => {
-  return true
+const solution = (arr, num, obj={})=>{
+  return arr.find((e)=>{
+    if(obj.hasOwnProperty([num - e])){
+      return true
+    }
+    obj[e] = false
+  }) !==undefined
 }
 
 module.exports = {

@@ -4,8 +4,15 @@
  * @returns {array}
 */
 
-const solution = (arr) => {
-  return []
+const solution = (arr, obj ={}, newArr=[])=>{
+  arr.forEach((e)=>{
+    if(obj.hasOwnProperty(e) && obj[e] < 2){
+      obj[e] += 1
+      newArr.push(e)
+    }
+    obj[e] = (obj[e] || 1)
+  })
+  return newArr
 }
 
 module.exports = {

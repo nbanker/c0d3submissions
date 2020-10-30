@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokemon Viewer</title>
+</head>
+<body>
+  <h1>Pokemon Viewer</h1>
+  <div class="buttonContainer">
+    <button class="previous">Previous</button>
+    <button class="next">Next</button>
+  </div>
+  <div class="mainBody">
+
+  </div>
+  <script>
+  const previousButton = document.querySelector('.previous')
+  const nextButton = document.querySelector('.next')
+  const mainBody = document.querySelector('.mainBody')
+  let nextUrl, previousUrl
+
+  const getPokemon = (url)=>{
+    fetch(url).then((pokemon)=>{
+    return pokemon.json()}).then((pokemonData)=>{
+    nextUrl = pokemonData['next']
+    previousUrl = pokemonData['previous']
+    const nameAndPicPokemon = pokemonData.results.map((thisPokemon)=>{
+      return fetch(thisPokemon.url).then((thisPokemonUrl)=>{
+      return thisPokemonUrl.json()
+      })
+    })
+  
+  Promise.all(nameAndPicPokemon).then((results)=>{
+    const htmlStr = results.reduce((acc, el)=>{
+    return `${acc}<div><p><h1>${el.name}</h1></p><img src="${el.sprites.front_default}"/><div>`;
+    },'');
+    mainBody.innerHTML = htmlStr
+    })
+  })
+  }
+
+  getPokemon('https://pokeapi.co/api/v2/pokemon/')
+  
+
+  previousButton.addEventListener('click', ()=>{
+    if(previousUrl){
+      getPokemon(previousUrl)
+    }
+  })
+  nextButton.addEventListener('click', ()=>{
+    getPokemon(nextUrl)
+  })
+
+  </script>
+  
+</body>
+</html>
+
+

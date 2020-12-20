@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS4/1</title>
+
+  <style>
+    #container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 655px;
+      height: 800px;
+      background-image: url("https://www.c0d3.com/challenges/assets/watch.jpg");
+    }
+
+    #watch-container {
+      position: relative;
+      margin: 210px auto auto 132px;
+      width: 377px;
+      height: 370px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    iframe {
+      margin-top: -125px;;
+      margin-left: -110px;
+    }
+
+    #content {
+      position: absolute;
+      top: 50%;
+      margin: auto;
+      background-color: white;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      transition: top 0.5s linear;
+    }
+
+    #content.full {
+      top: 0;
+    }
+
+    h1 {
+      font-size: 5em;
+      margin-top: 30px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="watch-container">
+
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7905.442397375347!2d98.29587925!3d7.819306849999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3050258d94ffcb75%3A0xd772b22da49989!2sKata%20Beach!5e0!3m2!1sen!2sth!4v1608362979060!5m2!1sen!2sth" width="600" height="450" frameborder="0" style="border:0" allowfullscreen="" aria-hidden="false" tabindex="0">
+      </iframe>
+
+      <div id="content">
+        <h1>
+          <span id="hour">0</span>
+          :
+          <span id="minute">00</span>
+        </h1>
+
+        <hr>
+
+        <h2 id="weekday">Sunday</h2>
+        <h2>
+          <span id="date">20</span>
+          <span id="month">December</span>
+          <span id="year">2020</span>
+        </h2>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const content = document.getElementById("content")
+    const hour = document.getElementById("hour")
+    const minute = document.getElementById("minute")
+    const weekday = document.getElementById ("weekday")
+    const date = document.getElementById("date")
+    const month = document.getElementById ("month")
+    const year = document.getElementById("year")
+
+    content.onclick = () => {
+      content.className = content.className.includes('full') ? '' : 'full';
+    }
+    const d = new Date();
+    hour.innerText = d.getHours() % 12;
+    const minutes = d.getMinutes();
+    minute.innerText = minutes.length < 2 ? `0${minutes}` : minutes;
+    weekday.innerText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][d.getDay()];
+    month.innerText = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"][d.getMonth()];
+    date.innerText = d.getDate();
+    year.innerText = d.getFullYear();
+  </script>
+  
+</body>
+</html>

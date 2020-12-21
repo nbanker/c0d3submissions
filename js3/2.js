@@ -12,8 +12,29 @@
  * @return {array} arr
  */
 
-const solution = (num1, num2) => {
-  return []
+
+const solution = (num1, num2, arr=[], subArr=[], i= 0)=>{
+  const objCreator = (obj={x:0, y:0})=>{
+      obj.x = subArr.length
+      obj.y = i 
+      return obj
+  }
+
+  const arrCreator = (j=0)=>{
+    if(j < num2){
+      subArr.push(objCreator())
+      return arrCreator(j + 1)
+    }
+    return subArr
+  }
+
+  if(i < num1){
+    arrCreator()
+    arr.push(subArr)
+    return solution(num1, num2, arr, subArr = [], i+1)
+  }
+  return arr
+
 }
 
 module.exports = {

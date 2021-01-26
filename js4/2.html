@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Stars UI</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+  <style>
+    .starsDisplay {
+      display: flex;
+    }
+    
+    i {
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    .fas {
+      -webkit-text-stroke-width: 3px;
+      -webkit-text-stroke-color: black;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <div class='starsDisplay'></div>
+    <p>You <span class='tense'>are giving</span> <span class='starsCount'>5</span> Stars!</p>
+  </div>
+
+  <script>
+    const container = document.querySelector('.container')
+    const starDisplay = document.querySelector('.starsDisplay')
+    const tense = document.querySelector('.tense')
+    const starsCount = document.querySelector('.starsCount')
+
+    let starsArray = []
+    let sectionLocked = false
+
+    const createStars = (number, index= 0)=>{
+      if(index >= number){
+        return
+      }
+      const star = new Stars(index)
+      starsArray.push(star)
+      starDisplay.append(star.starEl)
+      return createStars(number, index + 1)
+    }
+
+    function Stars(index){
+      this.starEl = document.createElement('i')
+      this.starEl.className = 'fa-star far'
+      this.starEl.index = index
+
+      const starsChecked = (index, counter)=>{
+      if(counter > index){
+        return
+      }
+      starsArray[counter].starEl.classList.add('fas')
+      return starsChecked(index, counter+1)
+      }
+
+      const starsUnChecked = (index)=>{
+        if(index >= starsArray.length){
+          return
+        }
+        starsArray[index].starEl.classList.remove('fas')
+        return starsUnChecked(index + 1)
+      }
+
+      this.starEl.addEventListener('click', ()=>{
+        if(sectionLocked === false){
+        tense.innerText = 'have given'
+        starsCount.innerText = index + 1
+        return sectionLocked = true
+        }
+      })
+
+      this.starEl.addEventListener('mouseover', ()=>{
+        if(sectionLocked === false){
+        this.starEl.classList.add('fas')
+        starsChecked(index, counter = 0)
+        starsCount.innerText = index + 1
+        return starsUnChecked(index + 1)
+        }
+        
+      })
+
+    }
+
+    container.addEventListener('mouseenter', ()=>{
+      sectionLocked = false
+    })
+    container.addEventListener('mouseleave', ()=>{
+      sectionLocked = true
+      tense.innerText = 'are giving'
+    })
+    
+    createStars(5)
+
+  </script>
+</body>
+</html>

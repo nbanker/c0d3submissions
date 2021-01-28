@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fair</title>
+  <style>
+    .container{
+      box-sizing: border-box;
+    }
+
+    .imageContainer {
+      display: flex;
+      justify-content: center;
+    }
+    .sImage {
+      cursor: none;
+    }
+    
+    .circle {
+      display: none;
+      background-image: url('https://c0d3.com/challenges/assets/fair/big.jpg');
+      background-repeat: no-repeat;
+      position: fixed;
+      height: 200px;
+      width: 200px;
+      border-radius: 50%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class='container'>
+
+    <div class='imageContainer'>
+      <img class='sImage' src='https://c0d3.com/challenges/assets/fair/small.jpg'>
+    </div>
+    <div class='circle'>
+      <img class='scope' src='https://c0d3.com/challenges/assets/fair/scope.png'>
+    </div>
+
+  </div>
+  
+  <script>
+    const sImage = document.querySelector('.sImage')
+    const circle = document.querySelector('.circle')
+    const scope = document.querySelector('.scope')
+
+    sImage.addEventListener('mousemove', (e)=>{
+      circle.style.display = 'block'
+      
+      circle.style.top = `${e.clientY - 100}` + 'px'
+      circle.style.left = `${e.clientX - 100}` + 'px'
+
+      circle.style.backgroundPositionX = `${(e.offsetX*-3)+100}` + 'px'
+      circle.style.backgroundPositionY = `${(e.offsetY*-3)+100}` + 'px'
+         
+    })
+
+    sImage.addEventListener('mouseleave', ()=>{
+      circle.style.display = 'none'
+    })
+
+
+  </script>
+</body>
+</html>

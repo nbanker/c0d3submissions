@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LightsGame</title>
+  <style>
+    .box {
+      display: inline-block;
+      border: 1px solid black;
+      box-sizing: border-box;
+      background-color: grey;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+    }
+    .box.on {
+      background-color: blue;
+    }
+  </style>
+</head>
+<body>
+  <div class='container'>
+  </div>
+
+  <script>
+    const container = document.querySelector('.container')
+
+    let boxArr = []
+    let amount = 2
+    let switchedOn = 1
+    
+    const createGame = (amount, index=0)=>{
+      if(index >= amount*amount){
+        const rand = Math.floor(Math.random()*Math.floor(amount*amount))
+        boxArr[rand].boxEl.lightOn = true
+        boxArr[rand].boxEl.classList.add('on')
+        return
+      }
+      const lightBox = new Box(index, false)
+      boxArr.push(lightBox)
+      container.style.width = `${amount * 50}` + 'px'
+      container.append(lightBox.boxEl)
+      return createGame(amount, index +1 )
+    }
+
+    const toggle = (dir)=>{
+      if(boxArr[dir].boxEl.lightOn){
+        switchedOn -= 1
+        boxArr[dir].boxEl.lightOn = false
+        return boxArr[dir].boxEl.classList.remove('on')
+      }
+      switchedOn += 1
+      boxArr[dir].boxEl.lightOn = true
+      return boxArr[dir].boxEl.classList.add('on')
+    }
+    
+    const checkAround = (index)=>{
+      left = [index - 1]
+      right = [index + 1]
+      up = [index - amount]
+      down = [index + amount]
+      
+      toggle(index)
+      
+      if(!((index % amount) -1 < 0)) toggle(left)
+      if(!((index % amount) + 1 >= amount)) toggle(right)
+      if(!((index / amount) - 1 < 0)) toggle(up)
+      if(!((index / amount) + 1 >= amount)) toggle(down)
+
+      if(switchedOn === 0){
+        const newGame = Number(prompt('Please enter a number for a new game; 0 if you want to quit'))
+        if(newGame <= 0){
+          return
+        }
+        boxArr = []
+        switchedOn = 1
+        container.innerHTML=''
+        amount = newGame
+        return createGame(amount)
+      }
+    }
+
+    function Box (index, lightOn){
+      this.boxEl = document.createElement('div')
+      this.boxEl.className = 'box'
+      this.boxEl.index = index
+      this.boxEl.lightOn = lightOn
+
+      this.boxEl.addEventListener('click', (e)=>{
+        if(!this.boxEl.lightOn){
+          return 
+        }
+        return checkAround(this.boxEl.index)
+      })
+    }
+
+    createGame(amount)
+
+  </script>
+</body>
+</html>

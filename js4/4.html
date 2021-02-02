@@ -25,78 +25,88 @@
 
   <script>
     const container = document.querySelector('.container')
-
+    
     let boxArr = []
     let amount = 2
-    let switchedOn = 1
+    let switchedOn  = 1
     
+    //function to create n * n box
     const createGame = (amount, index=0)=>{
       if(index >= amount*amount){
         const rand = Math.floor(Math.random()*Math.floor(amount*amount))
-        boxArr[rand].boxEl.lightOn = true
+        boxArr[rand].lightOn = true
         boxArr[rand].boxEl.classList.add('on')
         return
       }
-      const lightBox = new Box(index, false)
-      boxArr.push(lightBox)
+      boxArr[index] = new Box(index, false)
       container.style.width = `${amount * 50}` + 'px'
-      container.append(lightBox.boxEl)
-      return createGame(amount, index +1 )
-    }
-
-    const toggle = (dir)=>{
-      if(boxArr[dir].boxEl.lightOn){
-        switchedOn -= 1
-        boxArr[dir].boxEl.lightOn = false
-        return boxArr[dir].boxEl.classList.remove('on')
-      }
-      switchedOn += 1
-      boxArr[dir].boxEl.lightOn = true
-      return boxArr[dir].boxEl.classList.add('on')
+      container.append(boxArr[index].boxEl)
+      return createGame(amount, index+1 )
     }
     
-    const checkAround = (index)=>{
-      left = [index - 1]
-      right = [index + 1]
-      up = [index - amount]
-      down = [index + amount]
-      
-      toggle(index)
-      
-      if(!((index % amount) -1 < 0)) toggle(left)
-      if(!((index % amount) + 1 >= amount)) toggle(right)
-      if(!((index / amount) - 1 < 0)) toggle(up)
-      if(!((index / amount) + 1 >= amount)) toggle(down)
-
-      if(switchedOn === 0){
-        const newGame = Number(prompt('Please enter a number for a new game; 0 if you want to quit'))
-        if(newGame <= 0){
-          return
-        }
-        boxArr = []
-        switchedOn = 1
-        container.innerHTML=''
-        amount = newGame
-        return createGame(amount)
-      }
-    }
-
+    //Class for box
     function Box (index, lightOn){
       this.boxEl = document.createElement('div')
       this.boxEl.className = 'box'
-      this.boxEl.index = index
-      this.boxEl.lightOn = lightOn
+      this.index = index
+      this.lightOn = lightOn
+
+      this.toggle = ()=>{
+        switchedOn += this.lightOn ? -1 : 1
+        this.lightOn = !this.lightOn
+        this.boxEl.classList.toggle('on')
+      }
 
       this.boxEl.addEventListener('click', (e)=>{
-        if(!this.boxEl.lightOn){
+        if(!this.lightOn){
           return 
         }
-        return checkAround(this.boxEl.index)
+        return checkAround(index)
       })
     }
 
-    createGame(amount)
+    const newGame = ()=>{
+      amount = Number(prompt('Please enter a number for a new game; 0 if you want to quit'))
+      if(amount <= 0){
+        return
+      }
+      boxArr = []
+      switchedOn = 1
+      container.innerHTML=''
+      return createGame(amount)
+    }
 
+    //check around the squares
+    const checkAround = (index)=>{
+      const left = index - 1
+      const right = index + 1
+      const up = index - amount
+      const down = index + amount
+      
+      boxArr[index].toggle()
+      
+      //left of box check
+      if(!((index % amount) -1 < 0)){
+        boxArr[left].toggle()
+      }
+      //right of box check
+      if(!((index % amount) + 1 >= amount)){
+        boxArr[right].toggle()
+      }
+      //top of box check
+      if(!((index / amount) - 1 < 0)){
+        boxArr[up].toggle()
+      }
+      //bottom of box check
+      if(!((index / amount) + 1 >= amount)){
+        boxArr[down].toggle()
+      }
+
+      if(switchedOn === 0){
+        newGame()
+      }
+    }
+    createGame(amount)
   </script>
 </body>
 </html>

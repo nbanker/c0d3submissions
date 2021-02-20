@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KanBanBoard</title>
+
+  <style>
+    body{
+      display: flex;
+      margin: 0;
+      
+    }
+
+    .todoListContainer{
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 30px;
+      margin-left: 30px;
+      border: 1px solid black;
+      width: 25%;
+      height: fit-content;
+      max-width: fit-content;
+    }
+    .title{
+      text-align: center;
+      color: white;
+      padding: 10px;
+    }
+
+    .todoListContainer:first-of-type .left{
+      display: none;
+    }
+
+    .todoListContainer:last-of-type .right{
+      display: none;
+    }
+
+    .t1{
+      background-color: #35235D;
+    }
+    .t2{
+      background-color: #CB2402;
+    }
+    .t3{
+      background-color: #4C49A2;
+    }
+    .t4{
+      background-color: #A31A48;
+    }
+
+    .todoTask{
+      display: flex;
+      background-color: lightgrey;
+      padding: 10px;
+      margin-bottom: 5px;
+    }
+
+    .todoTask:last-of-type{
+      margin-bottom: 0px;
+    }
+
+    .todoText{
+      margin-left: 5px;
+      margin-right: 5px;
+      text-align: left;
+      width: 100%;
+      overflow-wrap: break-word;
+    }
+
+    .arrows{
+      display: flex;
+      align-items: center;
+      height: auto;
+    }
+    
+    .inputContainer{
+      display: flex;
+    }
+
+    .undoBtnContainer{
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class='todoListContainer'>
+      <div class='title t1'>To-Do</div>
+      <div class='todoList'>
+      </div>
+      
+      <div class='inputContainer'>
+        <textarea rows='5' class='textInput 0'></textarea><button class='submit'>Submit</button>
+      </div>
+    </div>
+
+    <div class='todoListContainer'>
+      <div class='title t2'>Doing</div>
+      <div class='todoList'>
+      </div>
+      <div class='inputContainer'>
+        <textarea rows='5' class='textInput 1'></textarea><button class='submit'>Submit</button>
+      </div>
+    </div>
+
+    <div class='todoListContainer'>
+      <div class='title t3'>Done</div>
+      <div class='todoList'>
+      </div>
+      <div class='inputContainer'>
+        <textarea rows='5' class='textInput 2'></textarea><button class='submit'>Submit</button>
+      </div>
+    </div>
+
+    <div class='todoListContainer'>
+      <div class='title t4'>Approved</div>
+      <div class='todoList'>
+      </div>
+      <div class='inputContainer'>
+        <textarea rows='5' class='textInput 3'></textarea><button class='submit'>Submit</button>
+      </div>
+    </div>
+  </div>
+    
+
+  
+  <div class='undoBtnContainer'>
+    <button class='undo'>Undo</button>
+  </div>
+
+
+  <script>
+    const todoList = document.querySelectorAll('.todoList')
+    const textInput = document.querySelectorAll('.textInput')
+    const submitBtn = document.querySelectorAll('.submit')
+    const undoBtn = document.querySelector('.undo')
+    
+    const tasksLS = localStorage.getItem('tasks') || '[]'
+    const todosArr = JSON.parse(tasksLS)
+
+    const undoArr = []
+
+    //function to be called when changes made to the todosArr
+    const localTasksUpdate = ()=>{
+      const newTasks = JSON.stringify(todosArr)
+      localStorage.setItem('tasks', newTasks)
+    }
+
+    //find the task Element by unique id can return just the index number or the HTMLelement
+    const findTask = (uId)=>{
+      return{
+        idx(){
+          return todosArr.findIndex(idx => idx.uniqueId === uId)
+        },
+        htmlEl(){
+          return document.getElementById(uId)
+        }
+      }
+    }
+
+    const modifyToDos = (todo, col, data)=>{
+      if(col){
+        todo.col = col
+      }
+      undoArr.unshift({todo, data})
+      
+      localTasksUpdate()
+    }
+
+    const undoAction = ()=>{
+      const undoElement = undoArr.splice(0,1)
+      const {todo} = undoElement[0]
+      const undoHTML = findTask(todo.uniqueId).htmlEl()
+
+      if(undoElement[0].data === 'created'){
+        undoHTML.parentNode.removeChild(undoHTML)
+        todosArr.splice(findTask(todo.uniqueId).idx(), 1)
+      }
+      if(undoElement[0].data === 'removed'){
+        renderTodos(todo)
+        todosArr.push(todo)
+      }
+      if(undoElement[0].data === 'mLeft'){
+        todo.col += 1
+        todoList[todo.col].appendChild(undoHTML)
+      }
+      if(undoElement[0].data === 'mRight'){
+        todo.col -= 1
+        todoList[todo.col].appendChild(undoHTML)
+      }
+      
+      localTasksUpdate()
+    }
+
+    const renderTodos = (items)=>{
+      if(items.length === 0){
+        return
+      }
+      //for rendering on page AND functionality
+      items.forEach((todo)=>{
+        const displayItem = document.createElement('div')
+        displayItem.className = 'todoTask'
+        displayItem.setAttribute('id', `${todo.uniqueId}`)
+        displayItem.innerHTML = 
+          `
+            <div class="left arrows"> < </div><div class="center todoText">${todo.string}</div><div class="right arrows"> > </div>
+          `
+
+        displayItem.addEventListener('click', (e)=>{
+          const targetClass = e.target.classList
+          
+          const taskElement = findTask(todo.uniqueId).htmlEl()
+          
+          if(targetClass.contains('center')){
+            e = confirm('do you want to delete ' + `${todo.string}`)
+              if(!e){
+                return
+              }
+
+            taskElement.parentNode.removeChild(taskElement)
+            
+            const todoElement = todosArr.splice(findTask(todo.uniqueId).idx(), 1)
+            modifyToDos(todoElement, undefined, 'removed')
+            
+          }
+
+          if(targetClass.contains('left')){
+            modifyToDos(todo, todo.col - 1, 'mLeft')
+            todoList[todo.col].appendChild(taskElement)
+            console.log('moved left', todo)
+          }
+          if(targetClass.contains('right')){
+            modifyToDos(todo, todo.col + 1, 'mRight')
+            todoList[todo.col].appendChild(taskElement)
+            console.log('moved right', todo)
+          }
+        })
+
+        todoList[todo.col].append(displayItem)
+      })
+        
+    }
+
+    //class with needed information only to be stored in localStorage
+    function TodoItem(string, col, uniqueId){
+      this.string = string
+      this.col = col
+      this.uniqueId = Math.floor((1+Math.random())*0x1000).toString(16).substring(1)
+    }
+
+    //submit to create class
+    submitBtn.forEach((e, i)=>{
+      e.addEventListener('click', ()=>{
+        if(!textInput[i].value){
+          return
+        }
+        const newTask = new TodoItem(textInput[i].value, i)
+        todosArr.push(newTask)
+        modifyToDos(newTask, undefined, 'created')
+        renderTodos([newTask])
+        textInput[i].value = ''
+      })
+    })
+    
+    undoBtn.addEventListener('click', ()=>{
+      if(undoArr.length <= 0){
+        return
+      }
+      return undoAction()
+    })
+
+    renderTodos(todosArr)
+
+  </script>
+  
+</body>
+</html>

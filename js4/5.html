@@ -162,7 +162,7 @@
     }
 
     const modifyToDos = (todo, col, data)=>{
-      if(col){
+      if(col !== undefined){
         todo.col = col
       }
       undoArr.unshift({todo, data})

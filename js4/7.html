@@ -152,7 +152,7 @@
       if(boardSize - clearedCounter === bombArr.length && gameOver === false){
         alert('You have won by clearing all safe boxes!')
       }
-      console.log(clearedCounter)
+      
     }
 
     //Box object calls on drawBoxes, should have
@@ -192,24 +192,34 @@
         return Object.values(surroundingObj)
       }
 
-      function alternateClickEvents(){
-          if(this.cleared) return
+      function alternateClickEvents(flagged, cleared){
+          if(cleared) return
           newBlockElement.classList.toggle('flagged')
-          if(this.flagged === false){
-            this.flagged = true
-            gameWin()
-            return
+          if(flagged === false){
+            return true
           }
-          if(this.flagged){
-            return this.flagged = false
+          if(flagged === true){
+            return false
           }
       }
+
       //Click event listener triggers; bomb, clearence, flag
+      newBlockElement.onauxclick = ()=>{
+        let result = alternateClickEvents(this.flagged, this.cleared)
+        this.flagged = result
+        gameWin()
+        return
+      }
+      
       newBlockElement.onclick = (e)=>{
         //ctrl + left click
         if(e.ctrlKey){
-          return alternateClickEvents()
+          let result = alternateClickEvents(this.flagged, this.cleared)
+          this.flagged = result
+          gameWin()
+          return
         }
+        if(this.flagged === true) return
 
         const surround = this.getSurroundingBoxes()
 
@@ -240,9 +250,7 @@
         }
         gameWin()
       }
-      newBlockElement.onauxclick = (e)=>{
-        return alternateClickEvents()
-      }
+      
     }
 
     //prevent context menu on gameboard
@@ -270,6 +278,7 @@
 
     populateBoard()
     assignNumber()
+
   </script>
 </body>
 </html>

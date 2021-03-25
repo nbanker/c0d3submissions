@@ -44,7 +44,7 @@
     const BLOCK_SIZE = 20
 
     let gameOver = false
-    let lastKey = { x: 0, y: 0 }
+    let lastKey = { x: 1, y: 0 }
     let inputDirection = { x: 1, y: 0 }
     
 
@@ -54,7 +54,32 @@
     
     let food = new Block('food')
     let snakeSize = 1
+    
+    window.addEventListener('keydown', (e)=>{
+        switch (e.key){
+          case 'ArrowUp':
+            if(lastKey.y !== 0 ) break
+            inputDirection = { x: 0, y:-1 }
+          break
 
+          case 'ArrowDown':
+            if(lastKey.y !== 0 ) break
+            inputDirection = { x: 0, y: 1 }
+          break
+
+          case 'ArrowLeft':
+            if(lastKey.x !== 0 ) break
+            inputDirection = { x:-1, y: 0 }
+          break
+
+          case 'ArrowRight':
+            if(lastKey.x !== 0 ) break
+            inputDirection = { x: 1, y: 0 }
+          break
+        }
+          return lastKey = inputDirection
+      })
+    
     function Block(type){
       const block = renderBlock(type)
 
@@ -131,8 +156,8 @@
 
     function eatFood(snakeHead){
       
-      let snakeX = snakeHead.currentPosition.x + inputDirection.x
-      let snakeY = snakeHead.currentPosition.y + inputDirection.y
+      let snakeX = snakeHead.currentPosition.x 
+      let snakeY = snakeHead.currentPosition.y 
 
       let foodX = food.currentPosition.x
       let foodY = food.currentPosition.y
@@ -156,8 +181,8 @@
       }
     }
 
-
     function gameEngine (){
+      
       let snakeHead = snake.head
       
       let snakeBody = snake.head.next
@@ -185,37 +210,7 @@
           snakeBody = snakeBody.next
           
         }
-        console.log('out')
       }
-    }
-
-    function controls (){
-      window.addEventListener('keydown', (e)=>{
-      //console.log(e.key)
-      
-      switch (e.key){
-        case 'ArrowUp':
-          if(lastKey.y !== 0 ) break
-          inputDirection = { x: 0, y:-1 }
-        break
-
-        case 'ArrowDown':
-          if(lastKey.y !== 0 ) break
-          inputDirection = { x: 0, y: 1 }
-        break
-
-        case 'ArrowLeft':
-          if(lastKey.x !== 0 ) break
-          inputDirection = { x:-1, y: 0 }
-        break
-
-        case 'ArrowRight':
-          if(lastKey.x !== 0 ) break
-          inputDirection = { x: 1, y: 0 }
-        break
-        }
-      })
-      lastKey = inputDirection
     }
 
     //initial block rendering
@@ -242,12 +237,10 @@
     // Game loop
     const gameLoop = ()=>{
       if(gameOver){
-        return console.log('you lose')
+        return alert('You lose! Press F5 to restart game')
       }
-
       gameEngine()
-      controls()
-
+      
       setTimeout(()=>gameLoop(), 300)
     }
     

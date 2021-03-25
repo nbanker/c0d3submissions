@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minesweeper</title>
+  <style>
+    body{
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      background-color: black;
+    }
+    .board{
+      display: grid;
+      height: 90vmin;
+      width: 100vmin;
+      background-color:white;
+      grid-template-rows: repeat(10, 1fr);
+      grid-template-columns: repeat(10, 1fr);
+      grid-gap: 0px
+    }
+    .box{
+      border: .25vmin solid black;
+      text-align: center;
+      padding-top: 2.5vmin;
+    }
+    .clicked{
+      background-color: lightgrey;
+      
+    }
+    .flagged{
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class='board'> </div>
+  <script>
+    const gameBoard = document.querySelector('.board')
+    const boardWidth = 10
+    const boardSize = boardWidth * boardWidth
+
+    let gameOver = false
+
+    const bombArr = []
+    const boxObj = {}
+    let clearedCounter = 0
+
+    //Function to a single drawBox on the gameBoard
+    function drawBox(position, isBomb){
+      const drawBoxElement = document.createElement('div')
+      drawBoxElement.className = 'box'
+      
+      drawBoxElement.style.gridColumnStart = position.x
+      drawBoxElement.style.gridRowStart = position.y
+      
+      if(isBomb){
+        drawBoxElement.classList.add('bomb')
+      }
+      gameBoard.appendChild(drawBoxElement)
+
+      return drawBoxElement
+    }
+
+    //Function to randomly set which boxes are bombs
+    function setBomb(){
+      if(Math.floor(Math.random()*boardWidth)+1 > boardWidth-1){
+        return isBomb = true
+      }
+        return isBomb = false
+    }
+
+    //helper function to get relevant box
+    function getBox(x, y){
+      return boxObj[`${x}${y}`]
+    }
+
+    //Once a bomb is set the surrounding 8 boxes needs to be updated with +1
+    function assignNumber(){
+      bombArr.forEach(element => {
+        
+          //get coordinates of surrounding boxes in an Arr of obj
+          const surround = getBox(element.x,element.y).getSurroundingBoxes()
+          
+          //loop through the boxes to get xy coordinates, set numbers on boxes
+          for(i = 0; i < surround.length; i++){
+            const {x, y} = surround[i]
+            
+            if(getBox(x,y).isBomb !== true){
+              let bombNum = getBox(x,y).bombCount
+              bombNum += 1
+              getBox(x,y).bombCount = bombNum
+
+              getBox(x,y).bombDisplay(bombNum)
+            }
+          }
+        
+      })
+      
+    }
+    
+    function clearBoxes(surroundingBoxes){
+      let newSurround =[]
+      
+      surroundingBoxes.forEach(element=>{
+        if(getBox(element.x,element.y).bombCount > 0){
+          const numberedBlock = getBox(element.x,element.y)
+
+          numberedBlock.showBox('clicked')
+
+          if(numberedBlock.cleared !== true){
+            numberedBlock.cleared = true
+            clearedCounter +=1
+          }
+          numberedBlock.bombDisplay(numberedBlock.bombCount)
+        }
+        if(getBox(element.x,element.y).bombCount === 0 && getBox(element.x,element.y).cleared !==true){
+          const emptyBlock = getBox(element.x,element.y)
+          
+          if(emptyBlock.cleared !== true){
+            emptyBlock.cleared = true
+            clearedCounter +=1
+          }
+          
+          emptyBlock.showBox('clicked')
+
+          newSurround = emptyBlock.getSurroundingBoxes()
+          
+          clearBoxes(newSurround)
+        }
+      })
+  }
+
+    //gameWin function checks if all bombs are flagged or all boxes with no bombs have been cleared
+    function gameWin(){
+      let flaggedBox = 0
+      bombArr.forEach(element => {
+        const bombBox = getBox(element.x,element.y)
+
+        if(bombBox.flagged){
+          flaggedBox += 1
+        }
+      })
+      if(flaggedBox === bombArr.length && gameOver === false){
+        alert('You have won!')
+      }
+      if(boardSize - clearedCounter === bombArr.length && gameOver === false){
+        alert('You have won by clearing all safe boxes!')
+      }
+      console.log(clearedCounter)
+    }
+
+    //Box object calls on drawBoxes, should have
+     //XY coords, flaggable, bomb boolean, bombNumber
+    function Box(position, isBomb, bombCount = 0){
+      const newBlockElement = drawBox(position, isBomb)
+
+      this.position = position
+      this.isBomb = isBomb
+      this.bombCount = bombCount
+      this.flagged = false
+      this.cleared = false
+
+      this.showBox = (status)=> newBlockElement.classList.add(status)
+      
+      this.bombDisplay = (bombCount)=>{
+        if(this.cleared){
+          return newBlockElement.innerHTML = bombCount
+        }
+      }
+      
+      this.getSurroundingBoxes = ()=>{
+        const surroundingObj = {
+          tl : {x: position.x -1, y: position.y -1},
+          tm : {x: position.x, y: position.y -1},
+          tr : {x: position.x +1, y: position.y -1},
+          lm : {x: position.x -1, y: position.y},
+          rm : {x: position.x +1, y: position.y},
+          bl : {x: position.x -1, y: position.y +1},
+          bm : {x: position.x , y: position.y +1},
+          br : {x: position.x +1, y: position.y +1}
+        }
+        if(position.x === 1) ['tl', 'lm', 'bl'].forEach(e => delete surroundingObj[e])
+        if(position.x === 10) ['tr', 'rm', 'br'].forEach(e => delete surroundingObj[e])
+        if(position.y === 1) ['tl', 'tm', 'tr'].forEach(e => delete surroundingObj[e])
+        if(position.y === 10) ['bl', 'bm', 'br'].forEach(e => delete surroundingObj[e])
+        return Object.values(surroundingObj)
+      }
+
+      function alternateClickEvents(){
+          if(this.cleared) return
+          newBlockElement.classList.toggle('flagged')
+          if(this.flagged === false){
+            this.flagged = true
+            gameWin()
+            return
+          }
+          if(this.flagged){
+            return this.flagged = false
+          }
+      }
+      //Click event listener triggers; bomb, clearence, flag
+      newBlockElement.onclick = (e)=>{
+        //ctrl + left click
+        if(e.ctrlKey){
+          return alternateClickEvents()
+        }
+
+        const surround = this.getSurroundingBoxes()
+
+        if(this.bombCount > 0){
+          if(this.cleared !== true){
+          this.cleared = true
+          clearedCounter += 1
+          }
+          this.bombDisplay(this.bombCount)
+          this.showBox('clicked')
+        }
+
+        if(this.isBomb !== true && this.bombCount === 0) {
+          if(this.cleared !== true){
+            this.cleared = true
+            clearedCounter += 1
+          }
+          this.showBox('clicked')
+          clearBoxes(surround)
+        }
+
+        if(this.isBomb){
+          alert('You have hit a bomb!')
+          gameOver = true
+          this.cleared = true
+          this.showBox('clicked')
+          this.bombDisplay('BOOM')
+        }
+        gameWin()
+      }
+      newBlockElement.onauxclick = (e)=>{
+        return alternateClickEvents()
+      }
+    }
+
+    //prevent context menu on gameboard
+    gameBoard.addEventListener('contextmenu', (e)=>{
+      e.preventDefault()
+    })
+
+    //Function to populate the grid with boxes
+    function populateBoard(){
+      for(i = 1; i <= boardWidth; i++){
+        let row = 1
+        let col = i
+          while(row <= boardWidth){
+            const isBomb = setBomb()
+            
+            const position = {x: row++, y: col}
+            if(isBomb) bombArr.push(position)
+
+            const box = new Box(position, isBomb)
+            
+            boxObj[`${position.x}${position.y}`] = box
+          }
+      }
+    }
+
+    populateBoard()
+    assignNumber()
+  </script>
+</body>
+</html>

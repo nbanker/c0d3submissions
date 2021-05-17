@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnakeGame</title>
+  <style>
+    body{
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      background-color: black;
+    }
+    .board{
+      display: grid;
+      height: 90vmin;
+      width: 100vmin;
+      background-color: white;
+      grid-template-rows: repeat(20, 1fr);
+      grid-template-columns: repeat(20, 1fr);
+    }
+    .snake{
+      border: .25vmin solid black;
+      background-color: green;
+    }
+    .food{
+      border: .25vmin solid black;
+      background-color: yellow;
+    }
+  </style>
+
+</head>
+<body>
+  <div class = 'board'></div>
+  
+  <script>
+    const gameBoard = document.querySelector('.board')
+    
+    //set constants and defaults
+    const BLOCK_SIZE = 20
+
+    let gameOver = false
+    let lastKey = { x: 1, y: 0 }
+    let inputDirection = { x: 1, y: 0 }
+    
+
+    const snake = {
+      head: new Block('snake'),
+      }
+    
+    let food = new Block('food')
+    let snakeSize = 1
+    
+    window.addEventListener('keydown', (e)=>{
+        switch (e.key){
+          case 'ArrowUp':
+            if(lastKey.y !== 0 ) break
+            inputDirection = { x: 0, y:-1 }
+          break
+
+          case 'ArrowDown':
+            if(lastKey.y !== 0 ) break
+            inputDirection = { x: 0, y: 1 }
+          break
+
+          case 'ArrowLeft':
+            if(lastKey.x !== 0 ) break
+            inputDirection = { x:-1, y: 0 }
+          break
+
+          case 'ArrowRight':
+            if(lastKey.x !== 0 ) break
+            inputDirection = { x: 1, y: 0 }
+          break
+        }
+          return lastKey = inputDirection
+      })
+    
+    function Block(type){
+      const block = renderBlock(type)
+
+      this.index = 1
+
+      this.currentPosition = {
+        x : parseInt(block.style.gridColumnStart),
+        y : parseInt(block.style.gridRowStart)
+      }
+
+      this.previousPosition = {
+        x : null,
+        y : null
+      }
+      
+      this.drawAt = ( x, y )=>{
+        block.style.gridColumnStart = x
+        block.style.gridRowStart = y
+        //console.log(x, y)
+      }
+
+      this.identifier =(data, index)=>{
+        block.id = index
+        block.className = data
+      }
+
+      this.next = null
+    }
+
+    function move(snakeBlock){
+      let positionX = snakeBlock.currentPosition.x
+      let positionY = snakeBlock.currentPosition.y
+
+      updatePreviousPosition(snakeBlock, positionX, positionY)
+      
+      let dirX = positionX + inputDirection.x
+      let dirY = positionY + inputDirection.y
+
+      updateCurrentPosition(snakeBlock, dirX, dirY)
+      
+      snakeBlock.drawAt( dirX, dirY )
+      
+    }
+
+    function updatePreviousPosition(item, previousX, previousY){
+      item.previousPosition.x = previousX
+      item.previousPosition.y = previousY
+    }
+    function updateCurrentPosition(item, currentX, currentY){
+      item.currentPosition.x = currentX
+      item.currentPosition.y = currentY
+    }
+
+    function checkCollision(snakeHead, snakeBody){
+      if(snakeHead.currentPosition.x === snakeBody.currentPosition.x && snakeHead.currentPosition.y === snakeBody.currentPosition.y ){
+        gameOver = true
+      }
+    }
+
+    function checkBorders(snakeHead){
+      let snakeDirX = snakeHead.currentPosition.x + inputDirection.x
+      let snakeDirY = snakeHead.currentPosition.y + inputDirection.y
+      if(snakeDirX > 20 || snakeDirX < 1 || snakeDirY > 20 || snakeDirY < 1){
+        gameOver = true
+      }
+    }
+
+    function randomPosition(){
+      return {
+        x: Math.floor(Math.random()*BLOCK_SIZE)+1,
+        y: Math.floor(Math.random()*BLOCK_SIZE)+1,
+      }
+    }
+
+    function eatFood(snakeHead){
+      
+      let snakeX = snakeHead.currentPosition.x 
+      let snakeY = snakeHead.currentPosition.y 
+
+      let foodX = food.currentPosition.x
+      let foodY = food.currentPosition.y
+
+      if(snakeX === foodX && snakeY === foodY){
+        console.log('eat')
+        
+        const tempHead = snake.head
+        
+        snakeSize += 1
+        food.identifier('snake', snakeSize)
+        
+        snake.head = food
+        
+        food = new Block('food')
+
+        snake.head.next = tempHead
+
+        snake.head.next.index = snakeSize
+        
+      }
+    }
+
+    function gameEngine (){
+      
+      let snakeHead = snake.head
+      
+      let snakeBody = snake.head.next
+
+      if(snakeHead){
+        
+        move(snakeHead)
+        eatFood(snakeHead)
+        checkBorders(snakeHead)
+
+        //SnakeBody to follow snake head with drawAt
+        while(snakeBody){
+          
+          updatePreviousPosition(snakeBody, snakeBody.currentPosition.x, snakeBody.currentPosition.y)
+          
+          updateCurrentPosition(snakeBody, snakeHead.previousPosition.x, snakeHead.previousPosition.y)
+
+          snakeBody.drawAt(snakeBody.currentPosition.x, snakeBody.currentPosition.y)
+
+          checkCollision(snake.head, snakeBody)
+
+          snakeHead = snakeBody
+
+          //exit the while loop
+          snakeBody = snakeBody.next
+          
+        }
+      }
+    }
+
+    //initial block rendering
+    function renderBlock(type){
+      
+      const blockElement = document.createElement('div')
+      blockElement.classList.add(type)
+      
+      if(type === 'snake'){
+        blockElement.id = 'originalHead'
+        blockElement.style.gridColumnStart = 10
+        blockElement.style.gridRowStart = 10
+      }
+
+      if(type === 'food'){
+        blockElement.style.gridColumnStart = randomPosition().x
+        blockElement.style.gridRowStart = randomPosition().y
+      }
+      
+      gameBoard.appendChild(blockElement)
+      return blockElement
+    }
+
+    // Game loop
+    const gameLoop = ()=>{
+      if(gameOver){
+        return alert('You lose! Press F5 to restart game')
+      }
+      gameEngine()
+      
+      setTimeout(()=>gameLoop(), 300)
+    }
+    
+    gameLoop()
+    
+  </script>
+
+</body>
+</html>
